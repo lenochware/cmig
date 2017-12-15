@@ -1,5 +1,10 @@
 <?php 
 
+/**
+ * It represents dump of the database.
+ * Provides methods for load/save dump as xml file.
+ * print_r $dump->data();
+ */
 class MigDump
 {
 	protected $data;
@@ -12,7 +17,14 @@ class MigDump
 	}
 
 	//get set data
-	function data($values) {}
+	function data(array $data)
+	{
+		if ($data) {
+			$this->data = $data;
+		}
+
+		return $this->data;
+	}
 
 	function parseXml($xmlString) {}
 
@@ -31,6 +43,11 @@ class MigDump
 	}
 }
 
+/**
+ * Create database dump according configuration $config.
+ * Database dump is represented as class MigDump.
+ * $dump = $dumper->getDump();
+ */
 class MigDumper
 {
 	protected $config;
@@ -52,9 +69,14 @@ class MigDumper
 	}
 }
 
-class MigPhpScript
+/**
+ * Create diff of two database dumps as php migration script.
+ * Database dump is represented as class MigDump.
+ * $phpMigration = $migDiff->createPhpMigration($dump1, $dump2);
+ */
+class MigDiff
 {
-	function build(MigDump $a, MigDump $b)
+	function createPhpMigration(MigDump $a, MigDump $b)
 	{
 		$diff = $this->diff($a, $b);
 		$s = $this->buildPhp($diff);
@@ -62,6 +84,12 @@ class MigPhpScript
 	}
 }
 
+/**
+ * Provides interface for creating/altering database schema and data.
+ * Translate php commands to sql statements for supported database.
+ * $builder->dropTable('test');  $builder->createTable(...) ...
+ * $sql = $builder->getSql();
+ */
 class MigSqlBuilder
 {
 	protected $sql = [];

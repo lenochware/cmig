@@ -5,7 +5,7 @@ require 'MigLibrary.php';
 
 $dump = new MigDump;
 $dumper = new MigDumper([]);
-$php = new MigPhpScript;
+$diff = new MigDiff;
 
 $make = new MigSqlBuilder;
 
