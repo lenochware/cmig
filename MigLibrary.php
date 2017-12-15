@@ -17,7 +17,7 @@ class MigDump
 	}
 
 	//get set data
-	function data(array $data)
+	function data(array $data = null)
 	{
 		if ($data) {
 			$this->data = $data;
@@ -58,7 +58,7 @@ class MigDumper
 	{
 		$this->pdo = $pdo;
 		$this->setConfig($config);
-		$this->databaseName = $this->pdo->query('select database()')->fetchColumn();
+		$this->databaseName = $this->getDatabaseName();
 	}
 
 	function setConfig(array $config)
@@ -66,13 +66,34 @@ class MigDumper
 		$this->config = $config;
 	}
 
+	protected function getDatabaseName()
+	{
+		return $this->pdo->query('select database()')->fetchColumn();
+	}
+
 	protected function getColumns($table)
 	{
-			return $this->pdo->query(
+			$rawColumns = $this->pdo->query(
 				"select * FROM INFORMATION_SCHEMA.COLUMNS
 				WHERE table_name = '$table'
 				AND TABLE_SCHEMA='$this->databaseName'")
 			->fetchAll();
+
+			$columns = [];
+
+			foreach ($rawColumns as $c) {
+				$columns[] = [
+					'name'     => $c['COLUMN_NAME'],
+					'default'  => $c['COLUMN_DEFAULT'],
+					'nullable' => ($c['IS_NULLABLE'] == 'YES'),
+					'type'     => $c['COLUMN_TYPE'],
+					'length'   => $c['CHARACTER_MAXIMUM_LENGTH'],
+					'position' => $c['ORDINAL_POSITION'],
+					'extra'    => $c['EXTRA'],
+				];
+			}
+
+			return $columns;
 	}
 
 	protected function getTables()
@@ -84,10 +105,13 @@ class MigDumper
 
 	function getDump()
 	{
-		var_dump($this->getTables());
-		var_dump($this->getColumns('books'));
+		$data = [];
+		foreach ($this->getTables() as $table) {
+			$data[$table] = $this->getColumns($table);
+		}
 
 		$dump = new MigDump();
+		$dump->data($data);
 		return $dump;
 	}
 }

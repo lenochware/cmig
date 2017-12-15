@@ -7,7 +7,9 @@ $dump = new MigDump;
 
 $pdo = new PDO('mysql:dbname=test;host=localhost', 'root');
 $dumper = new MigDumper($pdo, []);
-$dumper->getDump();
+$dump = $dumper->getDump();
+
+var_dump($dump->data());
 
 $diff = new MigDiff;
 
