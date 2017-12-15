@@ -4,7 +4,11 @@ require 'MigLibrary.php';
 
 
 $dump = new MigDump;
-$dumper = new MigDumper([]);
+
+$pdo = new PDO('mysql:dbname=test;host=localhost', 'root');
+$dumper = new MigDumper($pdo, []);
+$dumper->getDump();
+
 $diff = new MigDiff;
 
 $make = new MigSqlBuilder;

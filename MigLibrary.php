@@ -51,10 +51,14 @@ class MigDump
 class MigDumper
 {
 	protected $config;
+	protected $pdo;
+	protected $databaseName;
 
-	function __construct(array $config)
+	function __construct(PDO $pdo, array $config)
 	{
+		$this->pdo = $pdo;
 		$this->setConfig($config);
+		$this->databaseName = $this->pdo->query('select database()')->fetchColumn();
 	}
 
 	function setConfig(array $config)
@@ -62,8 +66,27 @@ class MigDumper
 		$this->config = $config;
 	}
 
+	protected function getColumns($table)
+	{
+			return $this->pdo->query(
+				"select * FROM INFORMATION_SCHEMA.COLUMNS
+				WHERE table_name = '$table'
+				AND TABLE_SCHEMA='$this->databaseName'")
+			->fetchAll();
+	}
+
+	protected function getTables()
+	{
+			return $this->pdo->query(
+				"select table_name FROM information_schema.tables where table_schema='$this->databaseName'")
+			->fetchAll(PDO::FETCH_COLUMN, 0);
+	}
+
 	function getDump()
 	{
+		var_dump($this->getTables());
+		var_dump($this->getColumns('books'));
+
 		$dump = new MigDump();
 		return $dump;
 	}
