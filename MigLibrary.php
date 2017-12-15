@@ -28,7 +28,27 @@ class MigDump
 
 	function parseXml($xmlString) {}
 
-	function getXml(array $data) {}
+	function getXml()
+	{
+		$xml = '';
+		foreach ($this->data as $tableName => $columns) {
+			$xmlTable = [];
+			foreach ($columns as $key => $column) {
+				$xmlTable[] = $this->getXmlColumn($column);
+			}
+			$xml .= "<table name=\"$tableName\">"."\r\n".implode("\r\n", $xmlTable)."\r\n".'</table>'."\r\n";
+		}
+		return $xml;
+	}
+
+	protected function getXmlColumn(array $column)
+	{
+		$s = [];
+		foreach ($column as $key => $value) {
+			$s[] = "$key=\"$value\"";
+		}
+		return "<column ".implode(" ", $s)." />";
+	}
 
 	function load($fileName, $format = 'xml')
 	{

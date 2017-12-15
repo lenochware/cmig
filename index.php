@@ -10,6 +10,7 @@ $dumper = new MigDumper($pdo, []);
 $dump = $dumper->getDump();
 
 var_dump($dump->data());
+print nl2br(htmlentities($dump->getXml()));
 
 $diff = new MigDiff;
 
