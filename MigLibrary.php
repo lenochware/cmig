@@ -84,46 +84,17 @@ class MigDiff
 	}
 }
 
-/**
- * Provides interface for creating/altering database schema and data.
- * Translate php commands to sql statements for supported database.
- * $builder->dropTable('test');  $builder->createTable(...) ...
- * $sql = $builder->getSql();
- */
-class MigSqlBuilder
+class MigTable
 {
-	protected $sql = [];
-	protected $currentTable;
+	protected $sql;
+	protected $name;
 
-	function getSql()
+	function __construct($name)
 	{
-		return $this->sql;
+		$this->name = $name;
 	}
 
-	function createTable($name, $func)
-	{
-		$this->currentTable = $name;
-		call_user_func($func, $this);
-		$this->currentTable = null;
-		return $this;
-	}
-
-	function dropTable($name)
-	{
-		return $this;
-	}
-
-	function alterTable($name, $func)
-	{
-		return $this;
-	}
-
-	function updateTable($name, $func)
-	{
-		return $this;
-	}
-
-	function addColumn($name)
+	function addColumn($name, $definition)
 	{
 		return $this;
 	}
@@ -133,7 +104,7 @@ class MigSqlBuilder
 		return $this;
 	}
 
-	function alterColumn($name)
+	function alterColumn($name, $definition)
 	{
 		return $this;
 	}
@@ -150,6 +121,64 @@ class MigSqlBuilder
 
 	function updateRow($id, array $data)
 	{
+		return $this;
+	}
+
+	function getSql()
+	{
+
+	}
+
+}
+
+/**
+ * Provides interface for creating/altering database schema and data.
+ * Translate php commands to sql statements for supported database.
+ * $builder->dropTable('test');  $builder->createTable(...) ...
+ * $sql = $builder->getSql();
+ */
+class MigSqlBuilder
+{
+	protected $tables;
+
+	function getSql()
+	{
+		$sql = '';
+		foreach ($this->tables as $table) {
+			$sql .= $table->getSql();
+		}
+
+		return $sql;
+	}
+
+	function getTable($name)
+	{
+		if (!$this->tables[$name]) {
+			$this->tables[$name] = new MigTable($name);
+		}
+		return $this->tables[$name];
+	}
+
+	function createTable($name, $func)
+	{
+		call_user_func($func, $this->getTable($name));
+		return $this;
+	}
+
+	function dropTable($name)
+	{
+		return $this;
+	}
+
+	function alterTable($name, $func)
+	{
+		call_user_func($func, $this->getTable($name));
+		return $this;
+	}
+
+	function updateTable($name, $func)
+	{
+		call_user_func($func, $this->getTable($name));
 		return $this;
 	}
 
