@@ -30,7 +30,7 @@ class MigDump
 
 	function getXml()
 	{
-		$xml = '';
+		$xml = '<?xml version="1.0" encoding="UTF-8"?>'."\r\n<database-dump>\r\n";
 		foreach ($this->data as $tableName => $columns) {
 			$xmlTable = [];
 			foreach ($columns as $key => $column) {
@@ -38,7 +38,7 @@ class MigDump
 			}
 			$xml .= "<table name=\"$tableName\">"."\r\n".implode("\r\n", $xmlTable)."\r\n".'</table>'."\r\n";
 		}
-		return $xml;
+		return $xml."</database-dump>";
 	}
 
 	protected function getXmlColumn(array $column)

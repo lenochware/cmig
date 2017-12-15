@@ -12,6 +12,8 @@ $dump = $dumper->getDump();
 var_dump($dump->data());
 print nl2br(htmlentities($dump->getXml()));
 
+$dump->save('test.xml');
+
 $diff = new MigDiff;
 
 $make = new MigSqlBuilder;
