@@ -26,7 +26,21 @@ class MigDump
 		return $this->data;
 	}
 
-	function parseXml($xmlString) {}
+	//bug? it returns false/null as empty string
+	function parseXml($xmlString)
+	{
+		$data = [];
+
+		$xml = new SimpleXMLElement($xmlString);
+		foreach ($xml->table as $table) {
+			$tableName = (string)$table['name'];
+			foreach ($table->column as $column) {
+				$data[$tableName][] = current($column->attributes());
+			}
+		}
+
+		return $data;
+	}
 
 	function getXml()
 	{

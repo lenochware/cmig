@@ -9,10 +9,12 @@ $pdo = new PDO('mysql:dbname=test;host=localhost', 'root');
 $dumper = new MigDumper($pdo, []);
 $dump = $dumper->getDump();
 
-var_dump($dump->data());
-print nl2br(htmlentities($dump->getXml()));
 
-$dump->save('test.xml');
+//print nl2br(htmlentities($dump->getXml()));
+
+//$dump->save('test.xml');
+//$dump->load('test.xml');
+var_dump($dump->data());
 
 $diff = new MigDiff;
 
