@@ -13,11 +13,14 @@ $dump = $dumper->getDump();
 //print nl2br(htmlentities($dump->getXml()));
 
 //$dump->save('test.xml');
-var_dump($dump->data());
-$dump->load('test.xml');
-var_dump($dump->data());
+
+// var_dump($dump->data());
+$dump2 = new MigDump('test.xml');
+// var_dump($dump->data());
+
 
 $diff = new MigDiff;
+var_dump($diff->compare($dump, $dump2));
 
 $make = new MigSqlBuilder;
 

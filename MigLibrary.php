@@ -159,9 +159,40 @@ class MigDiff
 {
 	function createPhpMigration(MigDump $a, MigDump $b)
 	{
-		$diff = $this->diff($a, $b);
+		$diff = $this->compare($a, $b);
 		$s = $this->buildPhp($diff);
 		return $s;
+	}
+
+	function compare(MigDump $dumpA, MigDump $dumpB)
+	{
+		$diff = [];
+
+		$a = $dumpA->data();
+		$b = $dumpB->data();
+
+		$ka = array_keys($a);
+		$kb = array_keys($b);
+
+		$tables = array_unique(array_merge($ka, $kb));
+
+		foreach ($tables as $t) {
+			if (in_array($t, $ka) and !in_array($t, $kb)) {
+				$diff[] = ['command' => 'dropTable', 'name' => $t];
+			}
+			elseif(in_array($t, $kb) and !in_array($t, $ka)) {
+				$diff[] = ['command'=> 'createTable', 'name' => $t, 'columns' => $b[$t]];
+				unset($b[$t]);
+			}
+
+		}
+
+		return $diff;
+	}
+
+	function buildPhp(array $diff)
+	{
+
 	}
 }
 
