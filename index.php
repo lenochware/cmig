@@ -13,7 +13,8 @@ $dump = $dumper->getDump();
 //print nl2br(htmlentities($dump->getXml()));
 
 //$dump->save('test.xml');
-//$dump->load('test.xml');
+var_dump($dump->data());
+$dump->load('test.xml');
 var_dump($dump->data());
 
 $diff = new MigDiff;

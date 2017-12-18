@@ -117,13 +117,13 @@ class MigDumper
 
 			foreach ($rawColumns as $c) {
 				$columns[] = [
-					'name'     => $c['COLUMN_NAME'],
-					'default'  => $c['COLUMN_DEFAULT'],
-					'nullable' => ($c['IS_NULLABLE'] == 'YES'),
-					'type'     => $c['COLUMN_TYPE'],
-					'length'   => $c['CHARACTER_MAXIMUM_LENGTH'],
-					'position' => $c['ORDINAL_POSITION'],
-					'extra'    => $c['EXTRA'],
+					'name'     => (string)$c['COLUMN_NAME'],
+					'default'  => (string)$c['COLUMN_DEFAULT'],
+					'nullable' => ($c['IS_NULLABLE'] == 'YES')? 'true' : '',
+					'type'     => (string)$c['COLUMN_TYPE'],
+					'length'   => (string)$c['CHARACTER_MAXIMUM_LENGTH'],
+					'position' => (string)$c['ORDINAL_POSITION'],
+					'extra'    => (string)$c['EXTRA'],
 				];
 			}
 
