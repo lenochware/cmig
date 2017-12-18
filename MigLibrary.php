@@ -35,7 +35,8 @@ class MigDump
 		foreach ($xml->table as $table) {
 			$tableName = (string)$table['name'];
 			foreach ($table->column as $column) {
-				$data[$tableName][] = current($column->attributes());
+				$carr = current($column->attributes());
+				$data[$tableName][$carr['name']] = $carr;
 			}
 		}
 
@@ -116,8 +117,9 @@ class MigDumper
 			$columns = [];
 
 			foreach ($rawColumns as $c) {
-				$columns[] = [
-					'name'     => (string)$c['COLUMN_NAME'],
+				$name = (string)$c['COLUMN_NAME'];
+				$columns[$name] = [
+					'name'     => $name,
 					'default'  => (string)$c['COLUMN_DEFAULT'],
 					'nullable' => ($c['IS_NULLABLE'] == 'YES')? 'true' : '',
 					'type'     => (string)$c['COLUMN_TYPE'],
@@ -164,6 +166,13 @@ class MigDiff
 		return $s;
 	}
 
+	protected function compareTables($a, $b)
+	{
+		$diff = [];
+
+		return $diff;
+	}
+
 	function compare(MigDump $dumpA, MigDump $dumpB)
 	{
 		$diff = [];
@@ -182,9 +191,10 @@ class MigDiff
 			}
 			elseif(in_array($t, $kb) and !in_array($t, $ka)) {
 				$diff[] = ['command'=> 'createTable', 'name' => $t, 'columns' => $b[$t]];
-				unset($b[$t]);
 			}
-
+			else {
+				$diff = array_merge($diff, $this->compareTables($a[$t], $b[$t]));
+			}
 		}
 
 		return $diff;

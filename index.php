@@ -14,9 +14,9 @@ $dump = $dumper->getDump();
 
 //$dump->save('test.xml');
 
-// var_dump($dump->data());
+ //var_dump($dump->data());
 $dump2 = new MigDump('test.xml');
-// var_dump($dump->data());
+ //var_dump($dump2->data());
 
 
 $diff = new MigDiff;
