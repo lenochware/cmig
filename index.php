@@ -6,7 +6,7 @@ require 'MigLibrary.php';
 $dump = new MigDump;
 
 $pdo = new PDO('mysql:dbname=test;host=localhost', 'root');
-$dumper = new MigDumper($pdo, []);
+$dumper = new MigMysqlDumper($pdo, []);
 $dump = $dumper->getDump();
 
 
@@ -22,23 +22,8 @@ $dump2 = new MigDump('test.xml');
 $diff = new MigDiff;
 var_dump($diff->compare($dump, $dump2));
 
-$make = new MigSqlBuilder;
-
-
-$make->createTable('nova', function($t) {
-	$t->addColumn('jedna', []);
-	$t->addColumn('dva', []);
-});
-
-$make->alterTable('nova', function($t) {
-	$t->alterColumn('jedna', []);
-});
-
-$make->updateTable('nova', function($t) {
-	$t->addRow([]);
-});
-
-var_dump($make->getSql());
+// $make = new MigSqlBuilder;
+// var_dump($make->getSql());
 
 
 class Migration123
