@@ -1,6 +1,7 @@
 <?php 
 
-require 'MigLibrary.php';
+require 'MigMysqlDumper.php';
+require 'MigDiff.php';
 
 
 $dump = new MigDump;
