@@ -166,9 +166,29 @@ class MigDiff
 		return $s;
 	}
 
-	protected function compareTables($a, $b)
+	protected function compareTables($tableName, $a, $b)
 	{
 		$diff = [];
+
+		$ka = array_keys($a);
+		$kb = array_keys($b);
+
+		$columns = array_unique(array_merge($ka, $kb));
+
+		foreach ($columns as $col) {
+			if (in_array($col, $ka) and !in_array($col, $kb)) {
+				$diff[] = ['command' => 'dropColumn', 'table' => $tableName, 'name' => $col];
+			}
+			elseif(in_array($col, $kb) and !in_array($col, $ka)) {
+				$diff[] = ['command'=> 'addColumn', 'table' => $tableName, 'name' => $col, 'attrib' => $b[$col]];
+			}
+			else {
+				$diffAttrib = array_diff_assoc($a[$col], $b[$col]);
+				if ($diffAttrib) {
+					$diff[] = ['command'=> 'changeColumn', 'table' => $tableName, 'name' => $col, 'attrib' => $diffAttrib];					
+				}
+			}
+		}
 
 		return $diff;
 	}
@@ -193,7 +213,7 @@ class MigDiff
 				$diff[] = ['command'=> 'createTable', 'name' => $t, 'columns' => $b[$t]];
 			}
 			else {
-				$diff = array_merge($diff, $this->compareTables($a[$t], $b[$t]));
+				$diff = array_merge($diff, $this->compareTables($t, $a[$t], $b[$t]));
 			}
 		}
 
