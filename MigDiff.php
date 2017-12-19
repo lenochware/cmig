@@ -70,7 +70,22 @@ class MigDiff
 
 	function buildPhp(array $diff)
 	{
+		$s = '';
 
+		foreach ($diff as $diffRow) {
+
+			$command = $diffRow['command'];
+			unset($diffRow['command']);
+
+			$par = [];
+			foreach ($diffRow as $key => $value) {
+				$par[] = is_array($value)? var_export($value, true) : "'$value'";
+			}
+
+			$s .= "\$builder->$command(".implode(', ', $par).");\r\n";
+		}
+
+		return $s;
 	}
 }
 
