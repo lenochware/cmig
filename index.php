@@ -22,7 +22,7 @@ $dump2 = new MigDump('test.xml');
 
 $diff = new MigDiff;
 var_dump($diff->compare($dump, $dump2));
-die($diff->createPhpMigration($dump, $dump2));
+file_put_contents('Migration1234.php', $diff->createPhpMigration($dump, $dump2));
 
 // $make = new MigSqlBuilder;
 // var_dump($make->getSql());

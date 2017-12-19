@@ -82,10 +82,16 @@ class MigDiff
 				$par[] = is_array($value)? var_export($value, true) : "'$value'";
 			}
 
-			$s .= "\$builder->$command(".implode(', ', $par).");\r\n";
+			$s .= "\$builder->$command(".implode(', ', $par).");\r\n\r\n";
 		}
 
-		return $s;
+		$trans = [
+			'{MIGRATION_ID}' => '12345',
+			'{MIGRATION_UP_CODE}' => "\t\t".str_replace("\n", "\n\t\t", $s),
+			'{MIGRATION_DOWN_CODE}' => '',
+		];
+
+		return strtr(file_get_contents('Migration.tpl'), $trans);
 	}
 }
 
