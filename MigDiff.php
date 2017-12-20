@@ -9,9 +9,16 @@ class MigDiff
 {
 	function createPhpMigration(MigDump $a, MigDump $b)
 	{
-		$diff = $this->compare($a, $b);
-		$s = $this->buildPhp($diff);
-		return $s;
+		$up = $this->buildPhp($this->compare($a, $b));
+		$down = $this->buildPhp($this->compare($b, $a));
+
+		$trans = [
+			'{MIGRATION_ID}' => date('Ymd_His'),
+			'{MIGRATION_UP_CODE}' => "\t\t".str_replace("\n", "\n\t\t", $up),
+			'{MIGRATION_DOWN_CODE}' => "\t\t".str_replace("\n", "\n\t\t", $down),
+		];
+
+		return strtr(file_get_contents(__DIR__.'/Migration.tpl'), $trans);
 	}
 
 	protected function compareTables($tableName, $a, $b)
@@ -85,13 +92,7 @@ class MigDiff
 			$s .= "\$builder->$command(".implode(', ', $par).");\r\n\r\n";
 		}
 
-		$trans = [
-			'{MIGRATION_ID}' => '12345',
-			'{MIGRATION_UP_CODE}' => "\t\t".str_replace("\n", "\n\t\t", $s),
-			'{MIGRATION_DOWN_CODE}' => '',
-		];
-
-		return strtr(file_get_contents(__DIR__.'/Migration.tpl'), $trans);
+		return trim($s);
 	}
 }
 
