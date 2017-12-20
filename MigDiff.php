@@ -91,7 +91,7 @@ class MigDiff
 			'{MIGRATION_DOWN_CODE}' => '',
 		];
 
-		return strtr(file_get_contents('Migration.tpl'), $trans);
+		return strtr(file_get_contents(__DIR__.'/Migration.tpl'), $trans);
 	}
 }
 
