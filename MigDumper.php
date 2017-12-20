@@ -27,6 +27,7 @@ abstract class MigDumper
 
 	protected abstract function getDatabaseName();
 	protected abstract function getColumns($table);
+	protected abstract function getIndexes($table);
 	protected abstract function getTables();
 
 	function getDump()

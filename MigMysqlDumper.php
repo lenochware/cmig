@@ -35,6 +35,34 @@ class MigMysqlDumper extends MigDumper
 			return $columns;
 	}
 
+	function getIndexes($table)
+	{
+		$rawIndexes = $this->pdo->query(
+		"select * FROM information_schema.statistics
+		WHERE table_schema='$this->databaseName'
+		AND table_name='$table'
+		ORDER BY INDEX_NAME,SEQ_IN_INDEX")
+		->fetchAll();
+
+		$name = '';
+		$indexes = array();
+		foreach ($rawIndexes as $idx) {
+			if ($idx['INDEX_NAME'] != $name) {
+				$name = $idx['INDEX_NAME'];
+				$indexes[$name] = array(
+				'name' => $name,
+				'type' => $idx['INDEX_TYPE'],
+				'nullable' => ($idx['NULLABLE'] == 'YES')? 'true' : '',
+				'unique' => ($idx['NON_UNIQUE'] != 1)? 'true' : '',
+				);
+			}
+
+			$indexes[$name]['columns'][] = $idx['COLUMN_NAME'];
+		}
+
+		return $indexes;
+	}
+
 	protected function getTables()
 	{
 			return $this->pdo->query(
