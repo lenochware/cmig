@@ -1,6 +1,7 @@
 <?php
 
-class Migration_{MIGRATION_ID}
+// Migration_{MIGRATION_ID}
+class Migration
 {
 	function up(MigSqlBuilder $builder)
 	{
