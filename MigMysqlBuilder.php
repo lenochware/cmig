@@ -1,6 +1,6 @@
 <?php 
 
-//TODO: indexes, table params (engine etc.)., MigManager, renameTable, renameColumn, updateTable, $config
+//TODO: indexes, table params (engine etc.)., MigManager, renameTable, renameColumn, updateTable, $config, change positions...
 
 require 'MigSqlBuilder.php';
 
@@ -60,6 +60,19 @@ class MigMysqlBuilder extends MigSqlBuilder
 	function updateTable($name, $data)
 	{
 
+	}
+
+
+	function renameTable($oldName, $newName)
+	{
+		$this->sql[] = "RENAME TABLE `$oldName` TO `$newName`";
+	}
+
+	function renameColumn($table, $oldName, $newName, array $def = [])
+	{
+		if (!$def) throw new Exception('Mysql requires column definition for renaming.');
+
+		$this->sql[] = "ALTER TABLE `$table` CHANGE `$oldName` ".$this->getColumnDefStr($newName, $def);
 	}
 
 }
