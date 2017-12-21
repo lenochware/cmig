@@ -26,7 +26,6 @@ class MigDump
 		return $this->data;
 	}
 
-	//bug? it returns false/null as empty string
 	function parseXml($xmlString)
 	{
 		$data = [];
@@ -45,6 +44,9 @@ class MigDump
 
 	function getXml()
 	{
+		
+		//htmlspecialchars($string, ENT_XML1 | ENT_QUOTES, 'UTF-8'); // escape data for xml attributes: <row id="1" name="asasa"/>
+
 		$xml = '<?xml version="1.0" encoding="UTF-8"?>'."\r\n<database-dump>\r\n";
 		foreach ($this->data as $tableName => $columns) {
 			$xmlTable = [];

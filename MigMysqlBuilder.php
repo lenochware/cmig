@@ -1,6 +1,6 @@
 <?php 
 
-//TODO: indexes, table params (engine etc.)., MigManager,  test generated sql, updateTable, $config, change positions...
+//TODO: indexes, table params (engine etc.)., MigManager,  test generated sql, insert,update,delete: <row id="1" name="asasa"/>, $config, change positions...
 
 require 'MigSqlBuilder.php';
 
@@ -26,6 +26,11 @@ class MigMysqlBuilder extends MigSqlBuilder
 		if (isset($def['extra'])) $sql[] = $def['extra'];
 
 		return implode(' ', $sql);
+	}
+
+	protected function getPrimaryKeyColumnName($table)
+	{
+		return 'ID';
 	}
 
   function dropTable($name)
@@ -58,9 +63,44 @@ class MigMysqlBuilder extends MigSqlBuilder
 
  	}
 
-	function updateTable($name, $data)
+	function delete($table, array $aid)
 	{
+		$pk = $this->getPrimaryKeyColumnName($table);
 
+		$sid = implode(',', $aid);
+		$this->sql[] = "DELETE FROM `$table` WHERE `$pk` in ($sid)";
+	}
+
+	//@TODO
+	function insert($table, array $rows)
+	{
+		/*
+
+		$sep = '';
+		foreach($data as $k => $v) {
+			$kstr .= $sep.$this->drv->quote($k);
+			if (is_null($v)) $vstr .= $sep."NULL";
+			else $vstr .= $sep."'".$this->escape($v)."'";
+			$sep = ',';
+		}
+		*/
+
+		$this->sql[] = "INSERT INTO `$table` ($kstr) VALUES ($vstr)";
+	}
+
+	//@TODO
+	function update($table, array $rows)
+	{
+		/*
+		$sep = '';
+		foreach($data as $k => $v) {
+			//if ($k == '' or $v == '') continue;
+			if (is_null($v)) $v = 'NULL'; else $v = "'".$this->escape($v)."'";
+			$fields .= $sep.$this->drv->quote($k)."=$v";
+			$sep = ',';
+		}
+		*/
+		$this->sql[] = "UPDATE `$table` set $fields WHERE $where";
 	}
 
 
