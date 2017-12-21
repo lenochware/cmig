@@ -16,7 +16,7 @@ abstract class MigSqlBuilder
 	abstract function renameTable($oldName, $newName);
 	abstract function addColumn($table, $name, $def);
 	abstract function dropColumn($table, $name);
-	abstract function changeColumn($table, $name, $def);
+	abstract function alterColumn($table, $name, $def);
 	abstract function renameColumn($table, $oldName, $newName, array $def = []);
 
 	function getSql()

@@ -1,13 +1,13 @@
 <?php 
 
-//TODO: indexes, table params (engine etc.)., MigManager, renameTable, renameColumn, updateTable, $config, change positions...
+//TODO: indexes, table params (engine etc.)., MigManager,  test generated sql, updateTable, $config, change positions...
 
 require 'MigSqlBuilder.php';
 
 class MigMysqlBuilder extends MigSqlBuilder
 {
 
-	//php array key not exists NOTICE thing...
+	//php 'array key not exists' NOTICE thing...
 	protected function array_get($array, $key)
 	{
 		return isset($array[$key])? $array[$key] : null;
@@ -40,11 +40,12 @@ class MigMysqlBuilder extends MigSqlBuilder
 
 	function addColumn($table, $name, $def)
 	{
-		$this->sql[] = "ALTER TABLE `$table` ADD ".$this->getColumnDefStr($name, $def);
+		$this->sql[] = "ALTER TABLE `$table` ADD COLUMN ".$this->getColumnDefStr($name, $def);
 	}
 
-	function changeColumn($table, $name, $def) {
-
+	function alterColumn($table, $name, $def)
+	{
+		$this->sql[] = "ALTER TABLE `$table` MODIFY COLUMN ".$this->getColumnDefStr($name, $def);
 	}
 
  	function createTable($name, $def)
@@ -72,7 +73,7 @@ class MigMysqlBuilder extends MigSqlBuilder
 	{
 		if (!$def) throw new Exception('Mysql requires column definition for renaming.');
 
-		$this->sql[] = "ALTER TABLE `$table` CHANGE `$oldName` ".$this->getColumnDefStr($newName, $def);
+		$this->sql[] = "ALTER TABLE `$table` CHANGE COLUMN `$oldName` ".$this->getColumnDefStr($newName, $def);
 	}
 
 }
