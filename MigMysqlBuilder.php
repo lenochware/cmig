@@ -45,6 +45,11 @@ class MigMysqlBuilder extends MigSqlBuilder
 		return 'ID';
 	}
 
+	function rawQuery($sql)
+	{
+		$this->sql[] = $sql;
+	}
+
   function dropTable($name)
   {
   	$this->sql[] = "DROP TABLE `$name`";

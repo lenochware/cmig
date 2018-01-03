@@ -23,6 +23,8 @@ abstract class MigSqlBuilder
 	abstract function insert($table, array $rows);
 	abstract function update($table, $id, array $rows);
 
+	abstract function rawQuery($sql);
+
 	function getSql()
 	{
 		return $this->sql;
