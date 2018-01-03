@@ -44,7 +44,7 @@ class MigDump
 			$i = 0;
 			foreach ($table->row as $row) {
 				$carr = current($row->attributes());
-				$data[$tableName]['rows'][$i++] = $carr;
+				$data[$tableName]['rows'][$carr['ID']] = $carr;
 			}
 		}
 
