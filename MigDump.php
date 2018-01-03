@@ -39,6 +39,15 @@ class MigDump
 			}
 		}
 
+		foreach ($xml->{'table-rows'} as $table) {
+			$tableName = (string)$table['name'];
+			$i = 0;
+			foreach ($table->row as $row) {
+				$carr = current($row->attributes());
+				$data[$tableName]['rows'][$i++] = $carr;
+			}
+		}
+
 		return $data;
 	}
 
