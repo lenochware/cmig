@@ -18,6 +18,9 @@ abstract class MigDumper
 		$this->pdo = $pdo;
 		$this->setConfig($config);
 		$this->databaseName = $this->getDatabaseName();
+		if (!$this->databaseName) {
+			throw new Exception('Database not found.');
+		}
 	}
 
 	function setConfig(array $config)
@@ -34,7 +37,7 @@ abstract class MigDumper
 	{
 		$data = [];
 		foreach ($this->getTables() as $table) {
-			$data[$table] = $this->getColumns($table);
+			$data[$table]['columns'] = $this->getColumns($table);
 		}
 
 		$dump = new MigDump();

@@ -35,7 +35,7 @@ class MigDump
 			$tableName = (string)$table['name'];
 			foreach ($table->column as $column) {
 				$carr = current($column->attributes());
-				$data[$tableName][$carr['name']] = $carr;
+				$data[$tableName]['columns'][$carr['name']] = $carr;
 			}
 		}
 
@@ -48,9 +48,9 @@ class MigDump
 		//htmlspecialchars($string, ENT_XML1 | ENT_QUOTES, 'UTF-8'); // escape data for xml attributes: <row id="1" name="asasa"/>
 
 		$xml = '<?xml version="1.0" encoding="UTF-8"?>'."\r\n<database-dump>\r\n";
-		foreach ($this->data as $tableName => $columns) {
+		foreach ($this->data as $tableName => $table) {
 			$xmlTable = [];
-			foreach ($columns as $key => $column) {
+			foreach ($table['columns'] as $key => $column) {
 				$xmlTable[] = $this->getXmlColumn($column);
 			}
 			$xml .= "<table name=\"$tableName\">"."\r\n".implode("\r\n", $xmlTable)."\r\n".'</table>'."\r\n";
