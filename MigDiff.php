@@ -54,7 +54,25 @@ class MigDiff
 			}
 		}
 
-		//@TODO compare rows
+		$ka = array_keys((array)$a['rows']);
+		$kb = array_keys((array)$b['rows']);
+
+		$rows = array_unique(array_merge($ka, $kb));
+
+		foreach ($rows as $rowId) {
+			if (in_array($rowId, $ka) and !in_array($rowId, $kb)) {
+				$diff[] = ['command' => 'delete', 'table' => $tableName, 'id' => $rowId];
+			}
+			elseif(in_array($rowId, $kb) and !in_array($rowId, $ka)) {
+				$diff[] = ['command'=> 'insert', 'table' => $tableName, 'attrib' => $b['rows'][$rowId]];
+			}
+			else {
+				$diffAttrib = array_diff_assoc($b['rows'][$rowId], $a['rows'][$rowId]);
+				if ($diffAttrib) {
+					$diff[] = ['command'=> 'update', 'table' => $tableName, 'id' => $rowId, 'attrib' => $diffAttrib];					
+				}
+			}
+		}
 
 		return $diff;
 	}
