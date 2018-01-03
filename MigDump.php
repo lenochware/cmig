@@ -48,6 +48,7 @@ class MigDump
 		//htmlspecialchars($string, ENT_XML1 | ENT_QUOTES, 'UTF-8'); // escape data for xml attributes: <row id="1" name="asasa"/>
 
 		$xml = '<?xml version="1.0" encoding="UTF-8"?>'."\r\n<database-dump>\r\n";
+
 		foreach ($this->data as $tableName => $table) {
 			$xmlTable = [];
 			foreach ($table['columns'] as $key => $column) {
@@ -55,6 +56,21 @@ class MigDump
 			}
 			$xml .= "<table name=\"$tableName\">"."\r\n".implode("\r\n", $xmlTable)."\r\n".'</table>'."\r\n";
 		}
+
+		//rows
+		foreach ($this->data as $tableName => $table) {
+			if (!isset($table['rows'])) {
+				continue;
+			}
+
+			$xmlTable = [];
+			foreach ($table['rows'] as $key => $row) {
+				$xmlTable[] = $this->getXmlRow($row);
+			}
+			$xml .= "<table-rows name=\"$tableName\">"."\r\n".implode("\r\n", $xmlTable)."\r\n".'</table>'."\r\n";
+		}
+
+
 		return $xml."</database-dump>";
 	}
 
@@ -66,6 +82,16 @@ class MigDump
 		}
 		return "<column ".implode(" ", $s)." />";
 	}
+
+	protected function getXmlRow(array $row)
+	{
+		$s = [];
+		foreach ($row as $key => $value) {
+			$s[] = "$key=\"$value\"";
+		}
+		return "<row ".implode(" ", $s)." />";
+	}
+
 
 	function load($fileName, $format = 'xml')
 	{
