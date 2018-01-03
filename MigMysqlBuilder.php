@@ -13,6 +13,18 @@ class MigMysqlBuilder extends MigSqlBuilder
 		return isset($array[$key])? $array[$key] : null;
 	}
 
+	protected function quote($str)
+	{
+		return "`".$str."`";
+	}
+
+	protected function escape($str, $type = 'string')
+	{
+		if (!$str or is_numeric($str)) return $str;
+		return mysql_escape_string ($str);
+	}
+
+
 	protected function getColumnDefStr($name, array $def)
 	{
 		$sql[] = "`$name`";
@@ -71,36 +83,29 @@ class MigMysqlBuilder extends MigSqlBuilder
 		$this->sql[] = "DELETE FROM `$table` WHERE `$pk` in ($sid)";
 	}
 
-	//@TODO
 	function insert($table, array $rows)
 	{
-		/*
-
 		$sep = '';
-		foreach($data as $k => $v) {
-			$kstr .= $sep.$this->drv->quote($k);
+		foreach($rows as $k => $v) {
+			$kstr .= $sep.$this->quote($k);
 			if (is_null($v)) $vstr .= $sep."NULL";
 			else $vstr .= $sep."'".$this->escape($v)."'";
 			$sep = ',';
 		}
-		*/
 
 		$this->sql[] = "INSERT INTO `$table` ($kstr) VALUES ($vstr)";
 	}
 
-	//@TODO
-	function update($table, array $rows)
+	function update($table, $id, array $rows)
 	{
-		/*
 		$sep = '';
-		foreach($data as $k => $v) {
-			//if ($k == '' or $v == '') continue;
+		foreach($rows as $k => $v) {
 			if (is_null($v)) $v = 'NULL'; else $v = "'".$this->escape($v)."'";
-			$fields .= $sep.$this->drv->quote($k)."=$v";
+			$fields .= $sep.$this->quote($k)."=$v";
 			$sep = ',';
 		}
-		*/
-		$this->sql[] = "UPDATE `$table` set $fields WHERE $where";
+
+		$this->sql[] = "UPDATE `$table` set $fields WHERE ID='$id'";
 	}
 
 

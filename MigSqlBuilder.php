@@ -21,7 +21,7 @@ abstract class MigSqlBuilder
 	//primary key in config? ID by default
 	abstract function delete($table, array $aid);
 	abstract function insert($table, array $rows);
-	abstract function update($table, array $rows);
+	abstract function update($table, $id, array $rows);
 
 	function getSql()
 	{
