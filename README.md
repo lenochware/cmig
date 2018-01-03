@@ -26,8 +26,8 @@ $dump->save('test.xml');
 
 **Create php migration file by comparing of two dumps**
 ```php
-$diff = new MigDiff;
-file_put_contents('Migration1234.php', $diff->createPhpMigration($dump, $dump2));
+$diff = new MigDiff($dump, $dump2);
+file_put_contents('Migration1234.php', $diff->createPhpMigration());
 ```
 
 

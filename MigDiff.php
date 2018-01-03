@@ -7,10 +7,19 @@
  */
 class MigDiff
 {
-	function createPhpMigration(MigDump $a, MigDump $b)
+	protected $a;
+	protected $b;
+
+	function __construct(MigDump $a, MigDump $b)
 	{
-		$up = $this->buildPhp($this->compare($a, $b));
-		$down = $this->buildPhp($this->compare($b, $a));
+		$this->a = $a;
+		$this->b = $b;
+	}
+
+	function createPhpMigration()
+	{
+		$up = $this->buildPhp($this->compare($this->a, $this->b));
+		$down = $this->buildPhp($this->compare($this->b, $this->a));
 
 		$trans = [
 			'{MIGRATION_ID}' => date('Ymd_His'),
@@ -25,8 +34,8 @@ class MigDiff
 	{
 		$diff = [];
 
-		$ka = array_keys($a);
-		$kb = array_keys($b);
+		$ka = array_keys($a['columns']);
+		$kb = array_keys($b['columns']);
 
 		$columns = array_unique(array_merge($ka, $kb));
 
@@ -35,25 +44,27 @@ class MigDiff
 				$diff[] = ['command' => 'dropColumn', 'table' => $tableName, 'name' => $col];
 			}
 			elseif(in_array($col, $kb) and !in_array($col, $ka)) {
-				$diff[] = ['command'=> 'addColumn', 'table' => $tableName, 'name' => $col, 'attrib' => $b[$col]];
+				$diff[] = ['command'=> 'addColumn', 'table' => $tableName, 'name' => $col, 'attrib' => $b['columns'][$col]];
 			}
 			else {
-				$diffAttrib = array_diff_assoc($a[$col], $b[$col]);
+				$diffAttrib = array_diff_assoc($b['columns'][$col], $a['columns'][$col]);
 				if ($diffAttrib) {
 					$diff[] = ['command'=> 'changeColumn', 'table' => $tableName, 'name' => $col, 'attrib' => $diffAttrib];					
 				}
 			}
 		}
 
+		//@TODO compare rows
+
 		return $diff;
 	}
 
-	function compare(MigDump $dumpA, MigDump $dumpB)
+	function compare()
 	{
 		$diff = [];
 
-		$a = $dumpA->data();
-		$b = $dumpB->data();
+		$a = $this->a->data();
+		$b = $this->b->data();
 
 		$ka = array_keys($a);
 		$kb = array_keys($b);
@@ -65,7 +76,7 @@ class MigDiff
 				$diff[] = ['command' => 'dropTable', 'name' => $t];
 			}
 			elseif(in_array($t, $kb) and !in_array($t, $ka)) {
-				$diff[] = ['command'=> 'createTable', 'name' => $t, 'columns' => $b[$t]];
+				$diff[] = ['command'=> 'createTable', 'name' => $t, 'columns' => $b[$t]['columns']];
 			}
 			else {
 				$diff = array_merge($diff, $this->compareTables($t, $a[$t], $b[$t]));
