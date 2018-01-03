@@ -9,6 +9,11 @@ class MigMysqlDumper extends MigDumper
 		return $this->pdo->query('select database()')->fetchColumn();
 	}
 
+	protected function getRows($table)
+	{
+		return $this->pdo->query("select * FROM `$table`")->fetchAll(PDO::FETCH_ASSOC);
+	}
+
 	protected function getColumns($table)
 	{
 			$rawColumns = $this->pdo->query(
