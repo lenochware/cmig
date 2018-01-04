@@ -7,7 +7,7 @@
  */
 class MigDump
 {
-	protected $data;
+	protected $data = [];
 
 	function __construct($fileName = '')
 	{
