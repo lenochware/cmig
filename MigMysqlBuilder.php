@@ -21,7 +21,7 @@ class MigMysqlBuilder extends MigSqlBuilder
 	protected function escape($str, $type = 'string')
 	{
 		if (!$str or is_numeric($str)) return $str;
-		return mysql_escape_string ($str);
+		return addslashes($str);
 	}
 
 
@@ -50,9 +50,9 @@ class MigMysqlBuilder extends MigSqlBuilder
 		$this->sql[] = $sql;
 	}
 
-  function dropTable($name)
+  function dropTable($tableName)
   {
-  	$this->sql[] = "DROP TABLE `$name`";
+  	$this->sql[] = "DROP TABLE `$tableName`";
   }
 
 	function dropColumn($table, $name)
@@ -70,28 +70,26 @@ class MigMysqlBuilder extends MigSqlBuilder
 		$this->sql[] = "ALTER TABLE `$table` MODIFY COLUMN ".$this->getColumnDefStr($name, $def);
 	}
 
- 	function createTable($name, $def)
+ 	function createTable($tableName, $def)
  	{
  		foreach ($def as $name => $col) {
  			$sql[] = $this->getColumnDefStr($name, $col);
  		}
 
- 		$this->sql[] = "CREATE TABLE `$name` (".implode(',', $sql).")";
+ 		$this->sql[] = "CREATE TABLE `$tableName` (".implode(',', $sql).")";
 
  	}
 
-	function delete($table, array $aid)
+	function delete($table, $id)
 	{
 		$pk = $this->getPrimaryKeyColumnName($table);
-
-		$sid = implode(',', $aid);
-		$this->sql[] = "DELETE FROM `$table` WHERE `$pk` in ($sid)";
+		$this->sql[] = "DELETE FROM `$table` WHERE `$pk`=$id";
 	}
 
-	function insert($table, array $rows)
-	{
+	function insert($table, array $row)
+	{		
 		$sep = '';
-		foreach($rows as $k => $v) {
+		foreach($row as $k => $v) {
 			$kstr .= $sep.$this->quote($k);
 			if (is_null($v)) $vstr .= $sep."NULL";
 			else $vstr .= $sep."'".$this->escape($v)."'";
@@ -101,10 +99,10 @@ class MigMysqlBuilder extends MigSqlBuilder
 		$this->sql[] = "INSERT INTO `$table` ($kstr) VALUES ($vstr)";
 	}
 
-	function update($table, $id, array $rows)
+	function update($table, $id, array $row)
 	{
 		$sep = '';
-		foreach($rows as $k => $v) {
+		foreach($row as $k => $v) {
 			if (is_null($v)) $v = 'NULL'; else $v = "'".$this->escape($v)."'";
 			$fields .= $sep.$this->quote($k)."=$v";
 			$sep = ',';

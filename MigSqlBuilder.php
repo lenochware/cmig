@@ -10,8 +10,8 @@ abstract class MigSqlBuilder
 {
 	protected $sql;
 
-  abstract function createTable($name, $def);
-  abstract function dropTable($name);
+  abstract function createTable($tableName, $def);
+  abstract function dropTable($tableName);
 	abstract function renameTable($oldName, $newName);
 	abstract function addColumn($table, $name, $def);
 	abstract function dropColumn($table, $name);
@@ -19,9 +19,9 @@ abstract class MigSqlBuilder
 	abstract function renameColumn($table, $oldName, $newName, array $def = []);
 
 	//primary key in config? ID by default
-	abstract function delete($table, array $aid);
-	abstract function insert($table, array $rows);
-	abstract function update($table, $id, array $rows);
+	abstract function delete($table, $id);
+	abstract function insert($table, array $row);
+	abstract function update($table, $id, array $row);
 
 	abstract function rawQuery($sql);
 
