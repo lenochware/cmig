@@ -35,6 +35,7 @@ abstract class MigDumper
 	protected abstract function getRows($table);
 	protected abstract function getColumns($table);
 	protected abstract function getIndexes($table);
+	protected abstract function getExtras($table);
 	protected abstract function getTables();
 
 	function getDump()
@@ -46,6 +47,8 @@ abstract class MigDumper
 			}
 
 			$data[$table]['columns'] = $this->getColumns($table);
+			$data[$table]['indexes'] = $this->getIndexes($table);
+			$data[$table]['extras'] = $this->getExtras($table);
 
 			if (in_array($table, $this->config['dump-rows'])) {
 				$data[$table]['rows'] = $this->getRows($table);

@@ -73,6 +73,26 @@ class MigMysqlDumper extends MigDumper
 		return $indexes;
 	}
 
+	function getExtras($table)
+	{
+
+		$rawExtras = $this->pdo->query(
+			"select CCSA.character_set_name, T.* 
+			FROM information_schema.`TABLES` T, 
+			information_schema.`COLLATION_CHARACTER_SET_APPLICABILITY` CCSA
+			WHERE CCSA.collation_name = T.table_collation
+			AND T.table_schema = '$this->databaseName'
+			AND T.table_name = '$table'")->fetch();
+
+		$extras = [
+			'engine' => $rawExtras['ENGINE'],
+			'collation' => $rawExtras['TABLE_COLLATION'],
+			'default_charset' => $rawExtras['character_set_name'],
+		];
+
+		return $extras;
+	}
+
 	protected function getTables()
 	{
 			return $this->pdo->query(
