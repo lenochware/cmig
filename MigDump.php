@@ -37,6 +37,10 @@ class MigDump
 				$carr = current($column->attributes());
 				$data[$tableName]['columns'][$carr['name']] = $carr;
 			}
+
+			$tarr = current($table->attributes());
+			unset($tarr['name']);
+			$data[$tableName]['extras'] = $tarr;
 		}
 
 		foreach ($xml->{'table-rows'} as $table) {
@@ -60,7 +64,8 @@ class MigDump
 			foreach ($table['columns'] as $key => $column) {
 				$xmlTable[] = $this->getXmlColumn($column);
 			}
-			$xml .= "<table name=\"$tableName\">"."\r\n".implode("\r\n", $xmlTable)."\r\n".'</table>'."\r\n";
+
+			$xml .= $this->getXmlTableOpenTag($tableName, $table['extras'])."\r\n".implode("\r\n", $xmlTable)."\r\n".'</table>'."\r\n";
 		}
 
 		//rows
@@ -78,6 +83,16 @@ class MigDump
 
 
 		return $xml."</database-dump>";
+	}
+
+	protected function getXmlTableOpenTag($tableName, array $options)
+	{
+		$s = [];
+		foreach ($options as $key => $value) {
+			$s[] = "$key=\"$value\"";
+		}
+
+		return "<table name=\"$tableName\" ".implode(' ', $s).">";
 	}
 
 	protected function getXmlColumn(array $column)

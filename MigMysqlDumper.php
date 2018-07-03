@@ -86,7 +86,7 @@ class MigMysqlDumper extends MigDumper
 
 		$extras = [
 			'engine' => $rawExtras['ENGINE'],
-			'collation' => $rawExtras['TABLE_COLLATION'],
+			//'collation' => $rawExtras['TABLE_COLLATION'],
 			'default_charset' => $rawExtras['character_set_name'],
 		];
 
