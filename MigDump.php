@@ -43,6 +43,16 @@ class MigDump
 			$data[$tableName]['extras'] = $tarr;
 		}
 
+		foreach ($xml->{'table-indexes'} as $table) {
+			$tableName = (string)$table['name'];
+			$i = 0;
+			foreach ($table->index as $index) {
+				$carr = current($index->attributes());
+				$carr['columns'] = explode(',', $carr['columns']);
+				$data[$tableName]['indexes'][$carr['name']] = $carr;
+			}
+		}
+
 		foreach ($xml->{'table-rows'} as $table) {
 			$tableName = (string)$table['name'];
 			$i = 0;
@@ -66,6 +76,17 @@ class MigDump
 			}
 
 			$xml .= $this->getXmlTableOpenTag($tableName, $table['extras'])."\r\n".implode("\r\n", $xmlTable)."\r\n".'</table>'."\r\n";
+		
+			//indexes
+			if (!isset($table['indexes'])) {
+				continue;
+			}
+
+			$xmlTable = [];
+			foreach ($table['indexes'] as $key => $row) {
+				$xmlTable[] = $this->getXmlRow($row, 'index');
+			}
+			$xml .= "<table-indexes name=\"$tableName\">"."\r\n".implode("\r\n", $xmlTable)."\r\n".'</table-indexes>'."\r\n";
 		}
 
 		//rows
@@ -105,13 +126,17 @@ class MigDump
 		return "<column ".implode(" ", $s)." />";
 	}
 
-	protected function getXmlRow(array $row)
+	protected function getXmlRow(array $row, $tagName = 'row')
 	{
 		$s = [];
 		foreach ($row as $key => $value) {
+			if (is_array($value)) {
+				$value = implode(',', $value);
+			}
+
 			$s[] = "$key=\"$value\"";
 		}
-		return "<row ".implode(" ", $s)." />";
+		return "<$tagName ".implode(" ", $s)." />";
 	}
 
 
