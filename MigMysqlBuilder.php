@@ -1,6 +1,7 @@
 <?php 
 
 //TODO: indexes, table params (engine etc.)., MigManager,  test generated sql, insert,update,delete: <row id="1" name="asasa"/>, $config, change positions...
+// getPrimaryKeyColumnName($table) - always ID
 
 require 'MigSqlBuilder.php';
 
@@ -75,6 +76,9 @@ class MigMysqlBuilder extends MigSqlBuilder
  		foreach ($def as $name => $col) {
  			$sql[] = $this->getColumnDefStr($name, $col);
  		}
+
+ 		$pk = $this->getPrimaryKeyColumnName($table);
+ 		$sql[] = "PRIMARY KEY (`$pk`)";
 
  		$this->sql[] = "CREATE TABLE `$tableName` (".implode(',', $sql).")";
 
