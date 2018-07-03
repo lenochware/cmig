@@ -17,6 +17,9 @@ abstract class MigSqlBuilder
 	abstract function dropColumn($table, $name);
 	abstract function alterColumn($table, $name, $def);
 	abstract function renameColumn($table, $oldName, $newName, array $def = []);
+	abstract function createIndex($table, $def);
+	abstract function dropIndex($table, $name);
+
 
 	//primary key in config? ID by default
 	abstract function delete($table, $id);

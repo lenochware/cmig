@@ -81,8 +81,21 @@ class MigMysqlBuilder extends MigSqlBuilder
  		$sql[] = "PRIMARY KEY (`$pk`)";
 
  		$this->sql[] = "CREATE TABLE `$tableName` (".implode(',', $sql).")";
-
  	}
+
+	function createIndex($table, $def)
+	{
+		$name = $def['name'];
+		$columns = is_array($def['columns'])? implode(',', $def['columns']) : $def['columns'];
+		$unique = $def['unique']? ' UNIQUE' : '';
+
+		$this->sql[] = "CREATE$unique INDEX `$name` ON $table ($columns)";
+	}
+
+	function dropIndex($table, $name)
+	{
+		$this->sql[] = "DROP INDEX `$name` ON $table";
+	}
 
 	function delete($table, $id)
 	{
